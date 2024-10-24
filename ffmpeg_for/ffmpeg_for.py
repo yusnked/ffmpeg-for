@@ -117,10 +117,20 @@ def print_progress(current, total):
     print(f"\n{current} out of {total} files are encoded.")
 
 
-def apply_interval(interval):
-    if 0 < interval <= 3600:
-        print(f"Waiting for {interval} seconds...")
-        sleep(interval)
+def countdown_with_sleep(interval):
+    if not (0 < interval <= 3600):
+        return
+
+    print()
+    previous_line_length = 0
+    for counter in range(interval, 0, -1):
+        counter_message = f"Waiting {counter} second{"s" if counter != 1 else ""}..."
+        if previous_line_length > len(counter_message):
+            print(" " * previous_line_length, end="\r")
+        print(counter_message, end="\r")
+        previous_line_length = len(counter_message)
+        sleep(1)
+    print(" " * previous_line_length, end="\r")
 
 
 @handle_keyboard_interrupt
@@ -135,7 +145,7 @@ def main():
             continue
 
         if current_count != 1:
-            apply_interval(args.interval)
+            countdown_with_sleep(args.interval)
 
         output_file_path = get_output_path(input_file_path, args.output_ext)
         run_ffmpeg(input_file_path, output_file_path, args.ffmpeg_options)
@@ -143,7 +153,7 @@ def main():
         if args.calc_metrics and is_same_video_duration(
             input_file_path, output_file_path
         ):
-            sleep(10)
+            countdown_with_sleep(10)
             metrics_json = run_ffmpeg_quality_metrics(input_file_path, output_file_path)
             metrics_global_dict = json.loads(metrics_json)["global"]
             write_metrics_global(metrics_global_dict, output_file_path)
