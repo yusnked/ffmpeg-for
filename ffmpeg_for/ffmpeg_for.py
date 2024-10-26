@@ -113,8 +113,11 @@ def write_metrics_global(metrics_global, output_filename):
         f.write(json.dumps(metrics_global, indent=4))
 
 
-def print_progress(current, total):
-    print(f"\n{current} out of {total} files are encoded.")
+def print_progress(current, total, error):
+    msg = f"\n{current - error} out of {total - error} files are encoded."
+    if error:
+        msg += f" ({error} file{'s' if error != 1 else ''} failed)"
+    print(msg)
 
 
 def countdown_with_sleep(interval):
@@ -137,11 +140,12 @@ def countdown_with_sleep(interval):
 def main():
     args = parse_args()
     total_files_count = len(args.input_file_paths)
+    error_count = 0
 
     for current_count, input_file_path in enumerate(args.input_file_paths, 1):
         if not is_valid_video_file(input_file_path):
             print(f"File {input_file_path} is not a valid video file path.")
-            total_files_count -= 1
+            error_count += 1
             continue
 
         if current_count != 1:
@@ -161,4 +165,4 @@ def main():
                 metrics_global_dict = json.loads(metrics_json)["global"]
                 write_metrics_global(metrics_global_dict, output_file_path)
 
-        print_progress(current_count, total_files_count)
+        print_progress(current_count, total_files_count, error_count)
