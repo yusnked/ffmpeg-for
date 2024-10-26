@@ -157,7 +157,8 @@ def main():
             print(f"Calculating quality metrics for {output_file_path}...")
 
             metrics_json = run_ffmpeg_quality_metrics(input_file_path, output_file_path)
-            metrics_global_dict = json.loads(metrics_json)["global"]
-            write_metrics_global(metrics_global_dict, output_file_path)
+            if metrics_json:
+                metrics_global_dict = json.loads(metrics_json)["global"]
+                write_metrics_global(metrics_global_dict, output_file_path)
 
         print_progress(current_count, total_files_count)
