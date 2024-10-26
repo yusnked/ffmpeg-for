@@ -10,7 +10,7 @@ from time import sleep
 
 from .util import exit_with_interrupt, handle_keyboard_interrupt
 
-ALLOWED_EXT_LIST = [".avi", ".flv", ".mkv", ".mov", ".mp4", ".webm"]
+ALLOWED_EXT_LIST = [".avi", ".flv", ".m4v", ".mkv", ".mov", ".mp4", ".webm"]
 
 
 def parse_args():
