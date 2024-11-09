@@ -107,10 +107,19 @@ def is_same_video_duration(original, converted):
     return abs(get_video_duration(original) - get_video_duration(converted)) < 0.05
 
 
-def write_metrics_global(metrics_global, output_filename):
-    output_basename = path.splitext(output_filename)[0]
-    with open(f"{output_basename}-metrics.txt", "w") as f:
-        f.write(json.dumps(metrics_global, indent=4))
+def write_metrics_global(metrics: str, output_filename: str) -> None:
+    metrics_filename = path.splitext(output_filename)[0] + "-metrics.txt"
+    try:
+        metrics_global_dict = json.loads(metrics)["global"]
+    except json.decoder.JSONDecodeError as e:
+        print(
+            f"Failed to write metrics file.\nFile: {metrics_filename}\nError: {e}",
+            file=sys.stderr,
+        )
+        return
+
+    with open(metrics_filename, "w") as f:
+        f.write(json.dumps(metrics_global_dict, indent=4))
 
 
 def print_progress(current, total, error):
@@ -159,8 +168,6 @@ def main():
             print(f"Calculating quality metrics for {output_file_path}...")
 
             metrics_json = run_ffmpeg_quality_metrics(input_file_path, output_file_path)
-            if metrics_json:
-                metrics_global_dict = json.loads(metrics_json)["global"]
-                write_metrics_global(metrics_global_dict, output_file_path)
+            write_metrics_global(metrics_json, output_file_path)
 
         print_progress(current_count, total_files_count, error_count)
