@@ -120,20 +120,18 @@ def print_progress(current, total, error):
     print(msg)
 
 
-def countdown_with_sleep(interval):
+def countdown_with_sleep(interval: int) -> None:
     if not (0 < interval <= 3600):
         return
 
     print()
-    previous_line_length = 0
     for counter in range(interval, 0, -1):
-        counter_message = f"Waiting {counter} second{"s" if counter != 1 else ""}..."
-        if previous_line_length > len(counter_message):
-            print(" " * previous_line_length, end="\r")
-        print(counter_message, end="\r")
-        previous_line_length = len(counter_message)
+        countdown_message = (
+            f"\rWaiting {counter} second{"s" if counter != 1 else ""}... "
+        )
+        print(countdown_message, end="")
         sleep(1)
-    print(" " * previous_line_length, end="\r")
+    print()
 
 
 @handle_keyboard_interrupt
